@@ -54,7 +54,7 @@ tag to tell browsers to render the gaps.
         <ul id="wd-my-books">
             <li>Dune</li>
             <li>Lord of the Rings</li>
-            <li>Ender's Game</li>
+            <li>{"Ender's Game"}</li>
             <li>Red Mars</li>
             <li>The Forever War</li>
         </ul>
