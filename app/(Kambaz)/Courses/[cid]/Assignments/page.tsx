@@ -1,3 +1,4 @@
+"use client";
 import Link from "next/link";
 import AssignmentsControlButtons from "./AssignmentsControlButtons";
 import AssignmentListControlButtons from "./AssignmentListControlButtons";
@@ -6,8 +7,12 @@ import { BsGripVertical } from "react-icons/bs";
 import AssignmentsControls from "./AssignmentsControls";
 import { PiNotePencilLight } from "react-icons/pi";
 import { MdOutlineArrowDropDown } from "react-icons/md";
+import { useParams } from "next/navigation";
+import * as db from "../../../Database";
 
 export default function Assignments() {
+    const { cid } = useParams();
+    const assignments = db.assignments;
   return (
     <div id="wd-assignments">
       <AssignmentsControls /> <br /><br /><br /><br />
@@ -19,69 +24,49 @@ export default function Assignments() {
                 40% of Total
               </span> </div>
         <ListGroup className="wd-assignment-list rounded-0">
+            {assignments
+            .filter((assignment:any) => assignment.course == cid)
+            .map((assignment:any) => (
         <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
             <div className="d-flex">
             <BsGripVertical className="me-2 fs-3" /><PiNotePencilLight className="me-2 fs-3" color="green" />
             <div className="flex-grow-1">
-          <Link href="/Courses/1234/Assignments/123"
+          <Link href={`/Courses/${cid}/Assignments/${assignment._id}`}
              className="wd-assignment-link" >
-            A1 - ENV + HTML </Link>
+            {assignment.title} </Link>
             <div className="small text-secondary mt-1">
-                <Link href="/Courses/1234/Assignments/123" className="text-danger">Multiple Modules</Link>
-                <span className="mx-2">|</span>
-                <span className="fw-semibold">Not Available until </span> <span>May 6 at 12:00am</span>
-                <span className="mx-2">|</span>
-                <div>
-                <span className="fw-semibold">Due </span><span>May 13 at 11:59pm</span>
-                <span className="mx-2">|</span>
-                100 Points </div>
+                <Link href={`/Courses/${cid}/Assignments/${assignment._id}`} 
+                className="text-danger">Multiple Modules</Link>
+                {(assignment.availableFrom || assignment.due || typeof assignment.points === "number") && (
+                    <span className="mx-2">|</span>
+                )}
+                {assignment.availableFrom && (
+                    <>
+                    <span className="fw-semibold">Not Available until </span>
+                    <span>{assignment.availableFrom}</span>
+                    </>
+                )}
+                {assignment.due && (
+                    <>
+                    <span className="mx-2">|</span>
+                    <span className="fw-semibold">Due </span>
+                    <span>{assignment.due}</span>
+                    </>
+                )}
+                {assignment.points && (
+                    <>
+                    <span className="mx-2">|</span>
+                    <span>{assignment.points}pts</span>
+                    </>
+                )}
+                
+                
                 </div>
                 </div>
                 <AssignmentListControlButtons />
                 </div>
           </ListGroupItem>
-        <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-            <div className="d-flex">
-            <BsGripVertical className="me-2 fs-3" /><PiNotePencilLight className="me-2 fs-3" color="green" />
-            <div className="flex-grow-1">
-          <Link href="/Courses/1234/Assignments/123"
-             className="wd-assignment-link" >
-            A2 - CSS + BOOTSTRAP </Link>
-            <div className="small text-secondary mt-1">
-                <Link href="/Courses/1234/Assignments/123" className="text-danger">Multiple Modules</Link>
-                <span className="mx-2">|</span>
-                <span className="fw-semibold">Not Available until </span> <span>May 6 at 12:00am</span>
-                <span className="mx-2">|</span>
-                <div>
-                <span className="fw-semibold">Due </span><span>May 13 at 11:59pm</span>
-                <span className="mx-2">|</span>
-                100 Points </div>
-                </div>
-                </div>
-                <AssignmentListControlButtons />
-                </div>
-          </ListGroupItem>
-        <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
-            <div className="d-flex">
-            <BsGripVertical className="me-2 fs-3" /><PiNotePencilLight className="me-2 fs-3" color="green" />
-            <div className="flex-grow-1">
-          <Link href="/Courses/1234/Assignments/123"
-             className="wd-assignment-link" >
-            A3 - JAVASCRIPT + REACT </Link>
-            <div className="small text-secondary mt-1">
-                <Link href="/Courses/1234/Assignments/123" className="text-danger">Multiple Modules</Link>
-                <span className="mx-2">|</span>
-                <span className="fw-semibold">Not Available until </span> <span>May 6 at 12:00am</span>
-                <span className="mx-2">|</span>
-                <div>
-                <span className="fw-semibold">Due </span><span>May 13 at 11:59pm</span>
-                <span className="mx-2">|</span>
-                100 Points </div>
-                </div>
-                </div>
-                <AssignmentListControlButtons />
-                </div>
-          </ListGroupItem>
+  ))}
         </ListGroup>
         </ListGroupItem>
       </ListGroup>
