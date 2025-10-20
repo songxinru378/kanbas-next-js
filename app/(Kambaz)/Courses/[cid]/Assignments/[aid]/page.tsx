@@ -17,7 +17,7 @@ export default function AssignmentEditor() {
             <FormControl 
             id="wd-name" 
             type="text" 
-            defaultValue={assignments.find((assignment: any)=>assignment.course == cid && assignment._id == aid)?.title??""}>
+            defaultValue={assignments.find(assignment=>assignment.course == cid && assignment._id == aid)?.title??""}>
             </FormControl>
         </Row>
         <Row className="mt-3">
@@ -25,21 +25,21 @@ export default function AssignmentEditor() {
             <FormControl
             id="wd-description"  
             type="textarea" 
-            defaultValue={assignments.find((assignment:any) => assignment.course == cid && assignment._id == aid)?.description ??""}>
+            defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.description ??""}>
             </FormControl>
         </Row>
         <Row className="mt-3 g-3">
             <Col><FormLabel htmlFor="wd-points"className="float-end" column sm={2}>Points</FormLabel></Col>
             <Col md={6}>
             <FormControl id="wd-points" type="number" 
-            defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.points ??""} />
+            defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.points ??""} />
             </Col>
         </Row>
         <Row className="mt-3 g-3">
             <Col><FormLabel htmlFor="wd-group" className="float-end" column sm={4}>Assignment Group</FormLabel></Col>
             <Col md={6}>
             <FormSelect id="wd-group" 
-            defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.group ??""}>
+            defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.group ??""}>
                 <option>ASSIGNMENTS</option>
                 <option>QUIZZES</option>
             </FormSelect>
@@ -49,7 +49,7 @@ export default function AssignmentEditor() {
             <Col><FormLabel htmlFor="wd-display-grade-as"className="float-end" column sm={4}>Display Grade as</FormLabel></Col>
             <Col md={6}>
             <FormSelect id="wd-display-grade-as" 
-            defaultValue={assignments.find((assignment:any) => assignment.course == cid && assignment._id == aid)?.displayAs ?? ""}>
+            defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.displayAs ?? ""}>
                 <option>Percentage</option>
                 <option>Points</option>
             </FormSelect>
@@ -63,7 +63,7 @@ export default function AssignmentEditor() {
                 <Card>
                     <CardBody>
                         <FormSelect id="wd-submission-type"
-                        defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.submissionType?? ""}>
+                        defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.submissionType?? ""}>
                             <option value={"Online"}>Online</option>
                             <option value={"On Paper"}>On Paper</option>
                         </FormSelect>
@@ -101,18 +101,18 @@ export default function AssignmentEditor() {
                         <br/>
                         <FormLabel htmlFor="wd-due-date" className="fw-semibold">Due</FormLabel>
                         <FormControl id="wd-due-date" type="datetime-local" 
-                        defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.dueDate ?? ""}></FormControl>
+                        defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.dueDate ?? ""}></FormControl>
                         <br />
                         <Row>
                             <Col>
                         <FormLabel htmlFor="wd-available-from" className="fw-semibold">Available from</FormLabel>
                         <FormControl type="datetime-local" 
-                        defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.availableDate ?? ""} 
+                        defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.availableDate ?? ""} 
                         id="wd-available-from"></FormControl></Col>
                         <Col>
                         <FormLabel htmlFor="wd-available-until" className="fw-semibold">Until</FormLabel>
                         <FormControl id="wd-available-until" type="datetime-local" 
-                        defaultValue={assignments.find((assignment: any) => assignment.course == cid && assignment._id == aid)?.dueDate ?? ""}></FormControl></Col>
+                        defaultValue={assignments.find(assignment => assignment.course == cid && assignment._id == aid)?.dueDate ?? ""}></FormControl></Col>
                         </Row>
 
 

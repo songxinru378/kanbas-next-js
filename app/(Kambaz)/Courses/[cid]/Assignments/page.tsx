@@ -25,9 +25,9 @@ export default function Assignments() {
               </span> </div>
         <ListGroup className="wd-assignment-list rounded-0">
             {assignments
-            .filter((assignment:any) => assignment.course == cid)
-            .map((assignment:any) => (
-        <ListGroupItem className="wd-assignment-list-item p-3 ps-1">
+            .filter(assignment => assignment.course == cid)
+            .map(assignment => (
+        <ListGroupItem key={assignment._id} className="wd-assignment-list-item p-3 ps-1">
             <div className="d-flex">
             <BsGripVertical className="me-2 fs-3" /><PiNotePencilLight className="me-2 fs-3" color="green" />
             <div className="flex-grow-1">

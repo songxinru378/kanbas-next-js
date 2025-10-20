@@ -1,4 +1,4 @@
-import { Button, Col, FormControl, InputGroup, Row } from "react-bootstrap";
+import { Button, FormControl, InputGroup} from "react-bootstrap";
 import InputGroupText from "react-bootstrap/esm/InputGroupText";
 import { BsPlus, BsSearch } from "react-icons/bs";
 

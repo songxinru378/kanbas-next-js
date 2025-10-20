@@ -6,7 +6,7 @@ import { courses } from "../../Database";
 import Breadcrumb from "./Breadcrumb";
 
 export default async function CoursesLayout(
-  { children, params }: { children: React.ReactNode; params: { cid: string }}
+  { children, params }: { children: React.ReactNode; params: Promise<{ cid: string }>;}
 ) {
   
   const { cid } = await params;
