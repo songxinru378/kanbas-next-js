@@ -7,15 +7,28 @@ import { BsGripVertical } from "react-icons/bs";
 import AssignmentsControls from "./AssignmentsControls";
 import { PiNotePencilLight } from "react-icons/pi";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState } from "../../../store";
+import { useState } from "react";
+import { addAssignment, deleteAssignment, editAssignment, updateAssignment } from "./reducer";
 import * as db from "../../../Database";
+
 
 export default function Assignments() {
     const { cid } = useParams();
-    const assignments = db.assignments;
+    const router = useRouter();
+    const { assignments } = useSelector((state: RootState) => state.assignmentsReducer);
+    const [assignmentName, setAssignmentName] = useState("");
+    const dispatch = useDispatch();
+    const handleAddAssignment = () => {
+        router.push(`/Courses/${cid}/Assignments/new`);
+    }
+
+
   return (
     <div id="wd-assignments">
-      <AssignmentsControls /> <br /><br /><br /><br />
+      <AssignmentsControls addAssignment={handleAddAssignment}/> <br /><br /><br /><br />
       <ListGroup className="rounded-0" id="wd-assignments">
         <ListGroupItem className="wd-assignments p-0 mb-5 fs-5 border-gray">
         <div className="wd-assignments-title p-3 ps-2 bg-secondary"><BsGripVertical className="me-2 fs-3" /><MdOutlineArrowDropDown className="me-2 fs-3" />
@@ -63,7 +76,11 @@ export default function Assignments() {
                 
                 </div>
                 </div>
-                <AssignmentListControlButtons />
+                <AssignmentListControlButtons assignmentId={assignment._id} deleteAssignment={(assignmentId: string) => {
+                            const ok = window.confirm("Are you sure you want to remove this assignment?");
+                            if (!ok) return;
+                            dispatch(deleteAssignment(assignmentId));
+                        } } />
                 </div>
           </ListGroupItem>
   ))}
