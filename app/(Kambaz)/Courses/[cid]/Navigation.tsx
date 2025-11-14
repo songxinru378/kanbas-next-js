@@ -1,17 +1,35 @@
+"use client";
 import Link from "next/link";
-export default function CourseNavigation() {
+import { usePathname } from "next/navigation";
+import { courses } from "../../Database";
+import { ListGroup, ListGroupItem } from "react-bootstrap";
+
+export default function CourseNavigation({ cid }: { cid: string }) {
+    
+    const course = courses.find((course) => course._id === cid);
+    const pathname = usePathname();
+    
+    const links = [{label:"Home", path: `/Courses/${cid}/Home`},
+        {label:"Modules", path: `/Courses/${cid}/Modules`}
+        , {label:"Piazza", path:`/Courses/${cid}/Piazza`},
+         {label:"Zoom", path:`/Courses/${cid}/Zoom`}, 
+         {label:"Assignments", path:`/Courses/${cid}/Assignments`},
+         {label:"Quizzes", path: `/Courses/${cid}/Quizzes`}, 
+         {label:"Grades", path: `/Courses/${cid}/Grades`}, 
+         {label:"People", path: `/Courses/${cid}/People/Table`}];
   return (
-    <div id="wd-courses-navigation">
-      <Link href="/Courses/1234/Home" id="wd-course-home-link">Home</Link><br/>
-      <Link href="/Courses/1234/Modules" id="wd-course-modules-link">Modules
-        </Link><br/>
-      <Link href="/Courses/1234/Piazza" id="wd-course-piazza-link">Piazza</Link><br/>
-      <Link href="/Courses/1234/Zoom" id="wd-course-zoom-link">Zoom</Link><br/>
-      <Link href="/Courses/1234/Assignments" id="wd-course-assignments-link">
-          Assignments</Link><br/>
-      <Link href="/Courses/1234/Quizzes" id="wd-course-quizzes-link">Quizzes
-        </Link><br/>
-      <Link href="/Courses/1234/Grades" id="wd-course-grades-link">Grades</Link><br/>
-      <Link href="/Courses/1234/People/Table" id="wd-course-people-link">People</Link><br/>
-    </div>
-  );}
+    <ListGroup className="wd fs-5 rounded-0" id="wd-courses-navigation">
+        {links.map((link)=>(
+            <ListGroupItem key={link.path} as={Link} href={link.path}
+            className={`text-danger border-0
+                ${pathname.includes(link.label) ? "text-black": "text-danger"}`}>
+                    {link.label}
+                </ListGroupItem>
+        ))}
+
+    </ListGroup>
+     );}
+
+
+    
+   
