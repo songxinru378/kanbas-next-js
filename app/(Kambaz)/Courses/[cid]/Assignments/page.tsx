@@ -10,19 +10,31 @@ import { MdOutlineArrowDropDown } from "react-icons/md";
 import { useParams, useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../store";
-import { useState } from "react";
-import { addAssignment, deleteAssignment, editAssignment, updateAssignment } from "./reducer";
-import * as db from "../../../Database";
+import { useState, useEffect } from "react";
+import { setAssignments } from "./reducer";
+import * as client from "../../client";
 
 
 export default function Assignments() {
     const { cid } = useParams();
     const router = useRouter();
     const { assignments } = useSelector((state: RootState) => state.assignmentsReducer);
-    const [assignmentName, setAssignmentName] = useState("");
     const dispatch = useDispatch();
     const handleAddAssignment = () => {
         router.push(`/Courses/${cid}/Assignments/new`);
+    }
+    const fetchAssignments = async () => {
+        const assignments = await client.findAssignmentsForCourse(cid as string);
+        dispatch(setAssignments(assignments));
+    }
+
+    useEffect (() => {
+        fetchAssignments();
+    }, [cid] );
+
+    const onRemoveAssignment = async (assignmentId:string) => {
+        await client.deleteAssignment(assignmentId);
+        dispatch(setAssignments(assignments.filter((assignment: any) => assignment._id !== assignmentId)));
     }
 
 
@@ -38,7 +50,6 @@ export default function Assignments() {
               </span> </div>
         <ListGroup className="wd-assignment-list rounded-0">
             {assignments
-            .filter(assignment => assignment.course == cid)
             .map(assignment => (
         <ListGroupItem key={assignment._id} className="wd-assignment-list-item p-3 ps-1">
             <div className="d-flex">
@@ -79,7 +90,7 @@ export default function Assignments() {
                 <AssignmentListControlButtons assignmentId={assignment._id} deleteAssignment={(assignmentId: string) => {
                             const ok = window.confirm("Are you sure you want to remove this assignment?");
                             if (!ok) return;
-                            dispatch(deleteAssignment(assignmentId));
+                            onRemoveAssignment(assignmentId);
                         } } />
                 </div>
           </ListGroupItem>

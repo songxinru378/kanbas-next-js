@@ -1,49 +1,81 @@
 "use client";
 import { Col, FormControl, FormLabel, Row, FormSelect, CardBody, FormCheck, Card, Button, Container } from "react-bootstrap";
-import { useParams } from "next/navigation";
-import * as db from "../../../../Database";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../store";
-import { addAssignment, updateAssignment } from "../reducer";
-import { useState } from "react";
+import { setAssignments, updateAssignment } from "../reducer";
+import { useState, useEffect } from "react";
+import * as client from "../../../client";
 
 export default function AssignmentEditor() {
+    const router = useRouter();
     const { cid, aid } = useParams();
-    const {assignments} = useSelector((state:RootState) => state.assignmentsReducer);
+    const { assignments } = useSelector((state:RootState) => state.assignmentsReducer);
     const dispatch = useDispatch();
-    const existing = assignments.find((a:any) => a._id === aid);
-    const isNew = !existing || aid === "new";
-    const [assignment, setAssignment] = useState<any>({
-        _id:existing?._id,
-        title:existing?.title ??"New Assignment",
-        description: existing?.description ??"New Assignment Description",
-        points:existing?.points ?? "100",
-        dueDate: existing?.dueDate ??"",
-        availableDate: existing?.availableDate??"",
-        availableUntilDate: existing?.dueDate ??"",
-        course: existing?.course ?? cid,
-        group: existing?.group ?? "ASSIGNMENTS",
-        submissionType: existing?.displayAs ?? "Online",
-        displayAs: existing?.displayAs??"Points",
-    });
-    const updateField = (field:string, value:string) => {
-        setAssignment({...assignment, [field]: value});
-    };
-    const handleSave = () => {
-        const availableFromLabel = assignment.availableDate ? new Date(assignment.availableDate).toLocaleString():"";
-        const dueLabel = assignment.dueDate ? new Date(assignment.dueDate).toLocaleString():"";
-        const payload = {
-            ...assignment, availableFrom: availableFromLabel, due: dueLabel,
-        };
-        if (isNew) {
-            const {_id, ...rest } = payload;
-            dispatch(addAssignment(rest));
-        } else {
-            dispatch(updateAssignment(payload));
+
+    const defaultAssignment = {
+        _id:"",
+        title: "New Assignment",
+        description: "New Assignment Description",
+        points:  "100",
+        dueDate: "",
+        availableDate: "",
+        availableUntilDate: "",
+        course: cid,
+        group:  "ASSIGNMENTS",
+        submissionType:  "Online",
+        displayAs: "Points",
+    }
+    const [assignment, setAssignment] = useState<any>(defaultAssignment);
+
+    const fetchAssignment = async () => {
+        if (aid === "new") {
+            setAssignment({...defaultAssignment, course: cid});
+            return;
+        }
+        const found = assignments.find((a: any) => a._id === aid);
+        if (found) {
+            setAssignment ({...defaultAssignment, ...found});
+        }
+        if (typeof aid === "string") {
+            const a = await client.findAssignmentsById(aid);
+            setAssignment({...defaultAssignment, ...a});
         }
     };
 
+    useEffect(() => {
+        fetchAssignment();
+    }, [aid, cid, assignments]);
+
+
+    const onUpdateAssignment = async () => {
+        await client.updateAssignment(assignment);
+        router.push(`Courses/${cid}/Assignments`);
+    };
+
+    
+
+
+    const updateField = (field:string, value: any) => {
+        setAssignment({...assignment, [field]: value});
+    };
+    const handleSave = async () => {
+        const availableFromLabel = assignment.availableDate ? new Date(assignment.availableDate).toLocaleString():"";
+        const dueLabel = assignment.dueDate ? new Date(assignment.dueDate).toLocaleString():"";
+        const payload = {
+            ...assignment, course: cid, availableFrom: availableFromLabel, due: dueLabel,
+        };
+        if (aid === "new") {
+            await client.createAssignmentForCourse(cid as string, payload)
+        } else {
+            await client.updateAssignment(payload);
+        }
+
+        const list = await client.findAssignmentsForCourse(cid as string);
+        dispatch(setAssignments(list));
+        router.push(`/Courses/${cid}/Assignments`);
+    };
 
   return (
     <Container id="wd-assignments-editor">
@@ -158,7 +190,7 @@ export default function AssignmentEditor() {
                         <FormLabel htmlFor="wd-available-until" className="fw-semibold">Until</FormLabel>
                         <FormControl id="wd-available-until" type="datetime-local"
                         value={assignment.dueDate}
-                        onChange={(e) => updateField("availableUntilDate", e.target.value)} ></FormControl></Col>
+                        onChange={(e) => updateField("dueDate", e.target.value)} ></FormControl></Col>
                         </Row>
 
 
@@ -169,10 +201,10 @@ export default function AssignmentEditor() {
             </Row>
             <br/>
       </div>
-      <Link href={`/Courses/${cid}/Assignments`} className="text-decoration-none" onClick={handleSave}>
-        <Button href={`/Courses/${cid}/Assignments`} variant="danger" size="lg" className="me-1 float-end" id="wd-save">Save</Button></Link>
+       
+        <Button onClick={handleSave} variant="danger" size="lg" className="me-1 float-end" id="wd-save">Save</Button>
        <Link href={`/Courses/${cid}/Assignments`} className="text-decoration-none">
-        <Button href={`/Courses/${cid}/Assignments`}variant="secondary" size="lg" className="me-1 float-end" id="wd-cancel">Cancel</Button></Link>
+        <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-cancel">Cancel</Button></Link>
 
     </Container>
 

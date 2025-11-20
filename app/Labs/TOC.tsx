@@ -1,28 +1,4 @@
-/*import Link from "next/link";
-export default function TOC() {
- return (
-   <ul>
-     <li>
-       <Link href="/Labs" id="wd-lab1-link">
-         Home </Link>
-     </li>
-     <li>
-       <Link href="/Labs/Lab1" id="wd-lab1-link">
-         Lab 1 </Link>
-     </li>
-     <li>
-       <Link href="/Labs/Lab2" id="wd-lab2-link">
-         Lab 2 </Link>
-     </li>
-     <li>
-       <Link href="/Labs/Lab3" id="wd-lab3-link">
-         Lab 3 </Link>
-     </li>
-     <li>
-       <Link href="/" id="wd-lab3-link">
-         Kambaz </Link> </li>
-   </ul>
-);}*/
+
 "use client";
 import { Nav, NavItem, NavLink } from "react-bootstrap";
 import Link from "next/link";
@@ -46,6 +22,9 @@ export default function TOC() {
      </NavItem>
      <NavItem>
        <NavLink href="/Labs/Lab4" as={Link} className={`nav-link ${pathname.endsWith("Lab4") ? "active" : ""}`}>Lab 4</NavLink>
+     </NavItem>
+     <NavItem>
+       <NavLink href="/Labs/Lab5" as={Link} className={`nav-link ${pathname.endsWith("Lab5") ? "active" : ""}`}>Lab 5</NavLink>
      </NavItem>
      <NavItem>
        <NavLink href="/" as={Link}>Kambaz</NavLink>

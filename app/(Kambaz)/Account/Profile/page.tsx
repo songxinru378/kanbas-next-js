@@ -6,15 +6,22 @@ import { setCurrentUser } from "../reducer";
 import { RootState } from "../../store";
 import Link from "next/link";
 import { Button, FormControl, FormSelect } from "react-bootstrap";
+import * as client from "../client";
 export default function Profile() {
     const [profile, setProfile] = useState<any>({});
  const dispatch = useDispatch();
  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+ const updateProfile = async () => {
+    const updatedProfile = await client.updateUser(profile);
+    dispatch(setCurrentUser(updatedProfile));
+  };
+
  const fetchProfile = () => {
    if (!currentUser) return redirect("/Account/Signin");
    setProfile(currentUser);
  };
- const signout = () => {
+ const signout = async () => {
+   await client.signout();
    dispatch(setCurrentUser(null));
    redirect("/Account/Signin");
  };
@@ -24,20 +31,6 @@ export default function Profile() {
 
   return (
     <div id="wd-profile-screen">
-      {/*<h3>Profile</h3>
-      <input defaultValue="alice" placeholder="username" className="wd-username"/><br/>
-      <input defaultValue="123"   placeholder="password" type="password"
-             className="wd-password" /><br/>
-      <input defaultValue="Alice" placeholder="First Name" id="wd-firstname" /><br/>
-      <input defaultValue="Wonderland" placeholder="Last Name" id="wd-lastname" /><br/>
-      <input defaultValue="2000-01-01" type="date" id="wd-dob" /><br/>
-      <input defaultValue="alice@wonderland" type="email" id="wd-email" /><br/>
-      <select defaultValue="FACULTY" id="wd-role">
-        <option value="USER">User</option>       <option value="ADMIN">Admin</option>
-        <option value="FACULTY">Faculty</option> <option value="STUDENT">Student</option>
-      </select><br/>
-      <Link href="Signin" > Sign out </Link>*/}
-
       <h3>Profile</h3>
       {profile && (
         <div>
@@ -65,6 +58,7 @@ export default function Profile() {
         <option value="FACULTY">Faculty</option> 
         <option value="STUDENT">Student</option>
       </FormSelect>
+      <button onClick={updateProfile} className="btn btn-primary w-100 mb-2"> Update </button>
       <Button onClick={signout} className="w-100 mb-2" id="wd-signout-btn">
            Sign out
          </Button>
