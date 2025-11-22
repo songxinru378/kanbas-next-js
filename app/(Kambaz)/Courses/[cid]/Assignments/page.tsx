@@ -42,8 +42,8 @@ export default function Assignments() {
 
   return (
     <div id="wd-assignments">
-        {isFaculty &&
-      <AssignmentsControls addAssignment={handleAddAssignment}/>} <br /><br /><br /><br />
+        
+      <AssignmentsControls addAssignment={handleAddAssignment} canAdd={isFaculty}/> <br /><br /><br /><br />
       <ListGroup className="rounded-0" id="wd-assignments">
         <ListGroupItem className="wd-assignments p-0 mb-5 fs-5 border-gray">
         <div className="wd-assignments-title p-3 ps-2 bg-secondary"><BsGripVertical className="me-2 fs-3" /><MdOutlineArrowDropDown className="me-2 fs-3" />
