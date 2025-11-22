@@ -16,6 +16,7 @@ export default function Dashboard() {
     image: "/images/reactjs.jpg", description: "New Description"
   });
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+  const isFaculty = !!currentUser && (currentUser as any).role === "FACULTY";
   const [showAllCourses, setShowAllCourses] = useState(false);
   const [myCourses, setMyCourses] = useState<any[]>([]);
 
@@ -90,6 +91,8 @@ export default function Dashboard() {
         </Button>
       )}</Col>
        </Row> <hr />
+       {isFaculty && (
+        <>
       <h5>New Course
           <button className="btn btn-primary float-end"
                   id="wd-add-new-course-click"
@@ -97,11 +100,14 @@ export default function Dashboard() {
                   <button className="btn btn-warning float-end me-2"
                 onClick={onUpdateCourse} id="wd-update-course-click">
           Update </button>
-      </h5><br />
+      </h5>
+      
+      <br />
       <FormControl value={course.name} className="mb-2" 
       onChange={(e) => setCourse({ ...course, name: e.target.value }) } />
       <FormControl as="textarea" value={course.description} rows={3}
       onChange={(e) => setCourse({ ...course, description: e.target.value }) }/>
+      </>)}
 
       <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2> <hr />
       <div id="wd-dashboard-courses">
@@ -124,6 +130,8 @@ export default function Dashboard() {
               <CardText className="wd-dashboard-course-description overflow-hidden" style={{height:"100px"}}>
                 {course.description}</CardText>
               <Button variant="primary"> Go </Button>
+              {isFaculty && (
+                <>
               <button onClick={(event) => {
                       event.preventDefault();
                       onDeleteCourse(course._id);
@@ -139,17 +147,19 @@ export default function Dashboard() {
                     className="btn btn-warning me-2 float-end" >
                     Edit
                     </button>
+                    </>
+              )} <br/>
 
                     {currentUser && (
                         enrolled ? (
-                            <button className="btn btn-danger me-2 mt-2" 
+                            <button className="btn btn-danger me-2 mt-2 " 
                             onClick={(event) => {
                                 event.preventDefault();
                                 handleUnenroll(course._id);
                             }}
                             >Unenroll</button>
                         ) : (
-                            <button className="btn btn-success me-2 mt-2"
+                            <button className="btn btn-success me-2 mt-2 "
                             onClick={(event) => {
                                 event.preventDefault();
                                 handleEnroll(course._id);

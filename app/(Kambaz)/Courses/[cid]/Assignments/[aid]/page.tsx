@@ -12,6 +12,8 @@ export default function AssignmentEditor() {
     const router = useRouter();
     const { cid, aid } = useParams();
     const { assignments } = useSelector((state:RootState) => state.assignmentsReducer);
+    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+    const isFaculty = !!currentUser && (currentUser as any).role === "FACULTY";
     const dispatch = useDispatch();
 
     const defaultAssignment = {
@@ -21,7 +23,8 @@ export default function AssignmentEditor() {
         points:  "100",
         dueDate: "",
         availableDate: "",
-        availableUntilDate: "",
+        availableUntilDate: "", 
+
         course: cid,
         group:  "ASSIGNMENTS",
         submissionType:  "Online",
@@ -201,8 +204,8 @@ export default function AssignmentEditor() {
             </Row>
             <br/>
       </div>
-       
-        <Button onClick={handleSave} variant="danger" size="lg" className="me-1 float-end" id="wd-save">Save</Button>
+       {isFaculty && (
+        <Button onClick={handleSave} variant="danger" size="lg" className="me-1 float-end" id="wd-save">Save</Button>)}
        <Link href={`/Courses/${cid}/Assignments`} className="text-decoration-none">
         <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-cancel">Cancel</Button></Link>
 

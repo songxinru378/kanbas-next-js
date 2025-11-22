@@ -4,14 +4,22 @@ import GreenCheckmark from "./GreenCheckmark";
 import { MdDoNotDisturbAlt } from "react-icons/md";
 import ModuleEditor from "./ModuleEditor";
 import { useState } from "react";
-export default function ModulesControls({ moduleName, setModuleName, addModule }:
-{ moduleName: string; setModuleName: (title: string) => void; addModule: () => void; }) {
+export default function ModulesControls({ 
+  moduleName, 
+  setModuleName, 
+  addModule, 
+  canAdd = false,}:
+{ moduleName: string; 
+  setModuleName: (title: string) => void; 
+  addModule: () => void;
+  canAdd?:boolean; }) {
 const [show, setShow] = useState(false);
  const handleClose = () => setShow(false);
  const handleShow = () => setShow(true);
     
  return (
    <div id="wd-modules-controls" className="text-nowrap">
+    
      <Button variant="danger" onClick={handleShow} size="lg" className="me-1 float-end" id="wd-add-module-btn">
        <FaPlus className="position-relative me-2" style={{ bottom: "1px" }} />
        Module
@@ -44,7 +52,11 @@ const [show, setShow] = useState(false);
      <Button variant="secondary" size="lg" className="me-1 float-end" id="wd-collapse-all">
        Collapse All
      </Button>
+     {canAdd && (
+      <>
      <ModuleEditor show={show} handleClose={handleClose} dialogTitle="Add Module"
        moduleName={moduleName} setModuleName={setModuleName} addModule={addModule} />
+       </>
+     )}
    </div>
 );}
