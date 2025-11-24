@@ -12,6 +12,8 @@ export default function AssignmentEditor() {
     const { cid, aid } = useParams();
     const {assignments} = useSelector((state:RootState) => state.assignmentsReducer);
     const dispatch = useDispatch();
+    const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+    const isFaculty = !!currentUser && (currentUser as any).role === "FACULTY";
     const existing = assignments.find((a:any) => a._id === aid);
     const isNew = !existing || aid === "new";
     const [assignment, setAssignment] = useState<any>({
@@ -31,6 +33,7 @@ export default function AssignmentEditor() {
         setAssignment({...assignment, [field]: value});
     };
     const handleSave = () => {
+        if (!isFaculty) return;
         const availableFromLabel = assignment.availableDate ? new Date(assignment.availableDate).toLocaleString():"";
         const dueLabel = assignment.dueDate ? new Date(assignment.dueDate).toLocaleString():"";
         const payload = {
@@ -169,8 +172,10 @@ export default function AssignmentEditor() {
             </Row>
             <br/>
       </div>
+        {isFaculty && (
       <Link href={`/Courses/${cid}/Assignments`} className="text-decoration-none" onClick={handleSave}>
         <Button href={`/Courses/${cid}/Assignments`} variant="danger" size="lg" className="me-1 float-end" id="wd-save">Save</Button></Link>
+        )}
        <Link href={`/Courses/${cid}/Assignments`} className="text-decoration-none">
         <Button href={`/Courses/${cid}/Assignments`}variant="secondary" size="lg" className="me-1 float-end" id="wd-cancel">Cancel</Button></Link>
 
