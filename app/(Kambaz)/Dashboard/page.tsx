@@ -14,6 +14,7 @@ import { enrollCourse, unenrollCourse } from "../Enrollments/reducer";
 export default function Dashboard() {
     const { courses } = useSelector((state: RootState) => state.coursesReducer);
     const dispatch = useDispatch();
+    const isFaculty = currentUser?.role === "FACULTY";
     const [course, setCourse] = useState<any>({
     _id: "0", name: "New Course", number: "New Number",
     startDate: "2023-09-10", endDate: "2023-12-15",
@@ -44,6 +45,8 @@ export default function Dashboard() {
         </Button>
       )}</Col>
        </Row> <hr />
+        {isFaculty && (
+        <>
       <h5>New Course
           <button className="btn btn-primary float-end"
                   id="wd-add-new-course-click"
@@ -56,6 +59,8 @@ export default function Dashboard() {
       onChange={(e) => setCourse({ ...course, name: e.target.value }) } />
       <FormControl as="textarea" value={course.description} rows={3}
       onChange={(e) => setCourse({ ...course, description: e.target.value }) }/>
+            </>
+      )}
 
       <h2 id="wd-dashboard-published">Published Courses ({courses.length})</h2> <hr />
       <div id="wd-dashboard-courses">
@@ -83,7 +88,10 @@ export default function Dashboard() {
               <CardTitle className="wd-dashboard-course-title text-nowrap overflow-hidden"> {course.name} </CardTitle>
               <CardText className="wd-dashboard-course-description overflow-hidden" style={{height:"100px"}}>
                 {course.description}</CardText>
+                
               <Button variant="primary"> Go </Button>
+                {isFaculty && (
+                          <>
               <button onClick={(event) => {
                       event.preventDefault();
                       dispatch(deleteCourse(course._id));
@@ -99,6 +107,8 @@ export default function Dashboard() {
                     className="btn btn-warning me-2 float-end" >
                     Edit
                     </button>
+                        </>
+                    )}
 
                     {currentUser && (
                         enrolled ? (
