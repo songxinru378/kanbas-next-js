@@ -14,7 +14,6 @@ import { enrollCourse, unenrollCourse } from "../Enrollments/reducer";
 export default function Dashboard() {
     const { courses } = useSelector((state: RootState) => state.coursesReducer);
     const dispatch = useDispatch();
-    const isFaculty = !!currentUser && (currentUser as any).role === "FACULTY";
     const [course, setCourse] = useState<any>({
     _id: "0", name: "New Course", number: "New Number",
     startDate: "2023-09-10", endDate: "2023-12-15",
@@ -22,6 +21,7 @@ export default function Dashboard() {
   });
   const { currentUser } = useSelector((state: RootState) => state.accountReducer);
   const { enrollments } = useSelector((state: RootState) => state.enrollmentsReducer);
+    const isFaculty = !!currentUser && (currentUser as any).role === "FACULTY";
 
   const handleEnroll = (userId: string, courseId:string) => {
     dispatch(enrollCourse({user: userId, course: courseId}));
