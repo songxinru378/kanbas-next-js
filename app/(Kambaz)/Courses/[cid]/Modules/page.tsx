@@ -18,14 +18,21 @@ export default function Modules() {
     const [moduleName, setModuleName] = useState("");
     const { modules } = useSelector((state: RootState) => state.modulesReducer);
     const dispatch = useDispatch();
+  const { currentUser } = useSelector((state: RootState) => state.accountReducer);
+    const isFaculty = currentUser?.role === "FACULTY";
+  
 
 
   return (
     <div className="wd-modules">
+      {isFaculty && (
+        <>
   <ModulesControls setModuleName={setModuleName} moduleName={moduleName} addModule={() => {
     dispatch(addModule({name:moduleName, course: cid}));
     setModuleName("")
   }}/><br /><br /><br /><br />
+          </>
+      )}
   <ListGroup className="rounded-0" id="wd-modules">
     {modules
           .filter((module: any) => module.course === cid)
@@ -34,7 +41,7 @@ export default function Modules() {
       <div className="wd-title p-3 ps-2 bg-secondary">
         <BsGripVertical className="me-2 fs-3" /> 
         {!module.editing && module.name}  
-        {module.editing && (
+        {module.editing && isFaculty && (
             <FormControl className="w-50 d-inline-block"
             onChange={(e) => dispatch(
                 updateModule({...module, name:e.target.value})
@@ -46,12 +53,14 @@ export default function Modules() {
             }}
             defaultValue={module.name} />
         )}
+        {isFaculty && (
       <ModuleControlButtons 
       moduleId={module._id}
       deleteModule={(moduleId) => {
         dispatch(deleteModule(moduleId));
       }}
       editModule={(moduleId) => dispatch(editModule(moduleId))}/>
+      )}
       </div>
       {module.lessons && (
       <ListGroup className="wd-lessons rounded-0">
