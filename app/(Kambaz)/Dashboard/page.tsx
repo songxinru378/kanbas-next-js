@@ -109,6 +109,7 @@ export default function Dashboard() {
                     </button>
                         </>
                     )}
+                <br/>
 
                     {currentUser && (
                         enrolled ? (
