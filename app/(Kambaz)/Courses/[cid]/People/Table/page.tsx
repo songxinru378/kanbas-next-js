@@ -3,14 +3,15 @@ import { Table } from "react-bootstrap";
 import { FaUserCircle } from "react-icons/fa";
 import React from "react";
 import { useState, useEffect } from "react";
-import * as client from "../../../../Account/client";
+import * as client from "../../../client";
 import PeopleDetails from "../Details";
 import Link from "next/link";
+import { useParams } from "next/navigation";
 
 export default function PeopleTable({ users = [], fetchUsers }: { users?: any[]; fetchUsers: () => void; }) {
   const [showDetails, setShowDetails] = useState(false);
   const [showUserId, setShowUserId] = useState<string | null>(null);
-
+  
  return (
   <div id="wd-people-table">
     {showDetails && (
@@ -19,6 +20,7 @@ export default function PeopleTable({ users = [], fetchUsers }: { users?: any[];
          onClose={() => {
            setShowDetails(false);
            fetchUsers();
+           
          }}/>
      )}
    <Table striped>
@@ -27,7 +29,7 @@ export default function PeopleTable({ users = [], fetchUsers }: { users?: any[];
     </thead>
     <tbody>
       {users
-    .map(user => (
+    .map((user: any) => (
 
      <tr key={user._id}>
       <td className="wd-full-name text-nowrap">

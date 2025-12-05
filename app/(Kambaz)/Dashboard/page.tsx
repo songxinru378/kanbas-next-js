@@ -150,7 +150,7 @@ export default function Dashboard() {
                     </>
               )} <br/>
 
-                    {currentUser && (
+                    {currentUser && showAllCourses &&(
                         enrolled ? (
                             <button className="btn btn-danger me-2 mt-2 " 
                             onClick={(event) => {

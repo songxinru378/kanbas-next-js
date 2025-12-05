@@ -16,7 +16,7 @@ export default function CourseNavigation({ cid }: { cid: string }) {
          {label:"Assignments", path:`/Courses/${cid}/Assignments`},
          {label:"Quizzes", path: `/Courses/${cid}/Quizzes`}, 
          {label:"Grades", path: `/Courses/${cid}/Grades`}, 
-         {label:"People", path: `/Courses/${cid}/People/Table`}];
+         {label:"People", path: `/Courses/${cid}/People`}];
   return (
     <ListGroup className="wd fs-5 rounded-0" id="wd-courses-navigation">
         {links.map((link)=>(
