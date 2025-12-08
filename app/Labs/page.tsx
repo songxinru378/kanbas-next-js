@@ -31,6 +31,12 @@ export default function Labs() {
        <li>
         <Link href="https://github.com/songxinru378/kanbas-next-js.git" id="wd-github">Github Repository</Link>
        </li>
+       <li>
+        <Link href="/" id="wd-kambaz-link">
+        Kambaz Quizzes Project
+        </Link>
+        <h4>Team Members: Xinru Song, Zhiye Li   Section: 04</h4>
+       </li>
     
      </ul>
    </div>
