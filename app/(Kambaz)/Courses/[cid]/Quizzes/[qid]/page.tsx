@@ -22,11 +22,7 @@ export default function QuizDetailsPage() {
         const q = await client.getQuizById(qid as string);
         setQuiz(q);
 
-        const questions = await client.findQuestionsForQuiz(qid as string);
-        const total = questions.reduce(
-            (sum: number, q: any) => sum + (q.points || 0), 0
-        ) || q.points || 0;
-        setTotalPoints(total);
+       
     }
 
     useEffect(() => {
@@ -79,7 +75,7 @@ export default function QuizDetailsPage() {
                         </tr>
                         <tr>
                             <td className="fw-semibold text-end pe-4">Points</td>
-                            <td>{totalPoints}</td>
+                            <td>{quiz.points}</td>
                         </tr>
                         <tr>
                             <td className="fw-semibold text-end pe-4">Assignment Group</td>

@@ -1,20 +1,14 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-
-
 import { useDispatch, useSelector, } from "react-redux";
 import * as client from "../../client";
 import { RootState } from "../../../store";
-import { current } from "@reduxjs/toolkit";
-import { FaPlus } from "react-icons/fa";
 import { setQuizzes } from "./reducer";
 import QuizListControlButtons from "./QuizListControlButtons";
 import QuizzesControls from "./QuizzesControls";
 import { ListGroup, ListGroupItem } from "react-bootstrap";
-import { BsGripVertical } from "react-icons/bs";
 import { MdOutlineArrowDropDown } from "react-icons/md";
-import { PiNotePencilLight } from "react-icons/pi";
 import { RxRocket } from "react-icons/rx";
 
 export default function Quizzes() {
@@ -30,7 +24,23 @@ export default function Quizzes() {
   const fetchQuizzes = async () => {
     if (!cid) return;
     const data = await client.findQuizzesForCourse(cid as string);
-    dispatch(setQuizzes(data));
+    if (!currentUser || (currentUser as any).role !== "STUDENT") {
+      dispatch(setQuizzes(data));
+      return;
+    }
+    const withScores = await Promise.all(
+      data.map(async(quiz: any) => {
+        try {
+          const attempt = await client.getLatestAttemptForQuiz(quiz._id);
+          return {
+            ...quiz, score: attempt?.score ?? null,
+          };
+        } catch {
+          return {...quiz, score: null};
+        }
+      })
+    );
+    dispatch(setQuizzes(withScores));
   }
   useEffect(() => {
     fetchQuizzes();

@@ -17,9 +17,8 @@ export default function QuizListControlButtons({ quiz, onDelete, onEdit, onToggl
     
   return (
     <div className="d-flex float-end">
-      <span title={quiz.published ? "Published - click to unpublish" : "Unpublished - click to publish"}
-        onClick={handleTogglePublishIcon}>
-            {quiz.published ? <GreenCheckmark /> : <FaBan className="text-danger fs-4 me-2" />}
+      <span onClick={handleTogglePublishIcon}>
+        {quiz.published ? <GreenCheckmark /> : <MdDoNotDisturbAlt className="text-danger fs-4" />}
         </span>
 
 
@@ -34,7 +33,6 @@ export default function QuizListControlButtons({ quiz, onDelete, onEdit, onToggl
                 {quiz.published ? "Unpublish": "Publish"}
             </DropdownItem>
         </DropdownMenu>
-
       </Dropdown>
       
     </div>

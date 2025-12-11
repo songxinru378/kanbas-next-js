@@ -54,8 +54,9 @@ export default function Modules() {
     <ListGroupItem key={module._id} className="wd-module p-0 mb-5 fs-5 border-gray">
       <div className="wd-title p-3 ps-2 bg-secondary">
         <BsGripVertical className="me-2 fs-3" /> 
-        {!module.editing && module.name}  
-        {module.editing && isFaculty && (
+        {!module.editing && module.name}  {/*if not editing -> show module name */} 
+        {/* if editing and isFaculty -> show input field */}
+        {module.editing && isFaculty && (        
             <FormControl className="w-50 d-inline-block"
             onChange={(e) => dispatch(
                 updateModule({...module, name:e.target.value})
@@ -66,7 +67,7 @@ export default function Modules() {
                 }
             }}
             defaultValue={module.name} />
-        )}
+        )} {/* if isFaculty is true, show ModuleControlBuutons */}
         {isFaculty && (
       <ModuleControlButtons 
       moduleId={module._id}

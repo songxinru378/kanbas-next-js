@@ -198,7 +198,7 @@ export default function QuizEditorPage() {
             <Row className="mt-3 g-3">
                 <div className="border rounded p-3 mb-4">
           <div className="fw-semibold mb-2">Options</div>
-          <Row className="mb-3 mt-3 g-3">
+          <Row className="mb-3 mt-3 g-3 align-items-center">
             <Col md={4}>
               <Form.Check
                 type="checkbox"
@@ -211,7 +211,7 @@ export default function QuizEditorPage() {
               />
             </Col></Row>
             <Row className="mt-3 g-3">
-            <Col md={4}>
+            <Col md={4} className="d-flex align-items-center">
               <FormCheck
                 type="checkbox"
                 id="wd-quiz-time-limit-check"
@@ -225,17 +225,15 @@ export default function QuizEditorPage() {
                 }
               />
             </Col>
-            <Col md={4}>
-              <FormGroup controlId="wd-quiz-time-limit-minutes">
-                <FormLabel>Time Limit (Minutes)</FormLabel>
+            <Col md={4} className="d-flex align-items-center ">
                 <FormControl
-                  type="number"
+                  type="text"
                   value={quiz.timeLimit ?? 20}
                   onChange={(e) =>
                     handleChange("timeLimit", Number(e.target.value) || 0)
                   }
                 />
-              </FormGroup>
+                <span className="ms-2">Minutes</span>
             </Col></Row>
             <Row className="mt-3 g-3">
             <Col md={4}>
@@ -249,9 +247,7 @@ export default function QuizEditorPage() {
                 }
               />
             </Col>
-            <Col md={4}>
-              <FormGroup controlId="wd-quiz-attempts-allowed">
-                <FormLabel>How Many Attempts</FormLabel>
+            <Col md={4} className="d-flex">
                 <FormControl
                   type="number"
                   value={quiz.maxAttempts ?? 1}
@@ -263,7 +259,7 @@ export default function QuizEditorPage() {
                   }
                   disabled={!quiz.multipleAttempts}
                 />
-              </FormGroup>
+                <span className="ms-2">Attempts</span>
             </Col>
           </Row>
 

@@ -227,7 +227,6 @@ export default function QuestionEditorPage() {
         {/* Question text */}
         <div className="mb-2 fw-semibold">Question:</div>
         <FormGroup className="mb-4">
-          {/* “WYSIWYG” – using textarea per assignment, can be replaced by real editor later */}
           <FormControl
             as="textarea"
             rows={4}

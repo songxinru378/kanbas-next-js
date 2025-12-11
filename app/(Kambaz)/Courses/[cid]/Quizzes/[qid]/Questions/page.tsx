@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Button, Form, FormControl, Row, Col, Dropdown } from "react-bootstrap";
 import * as client from "../../../../client";
 import { FaTrash, FaEdit, FaCheckCircle, FaBan, FaPlus } from "react-icons/fa";
+import GreenCheckmark from "../../../Modules/GreenCheckmark";
+import { IoEllipsisVertical } from "react-icons/io5";
 
 export default function QuizQuestionsEditorPage() {
   const { cid, qid } = useParams();
@@ -13,29 +15,26 @@ export default function QuizQuestionsEditorPage() {
   const [quiz, setQuiz] = useState<any>(null);
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  //const [title, setTitle] = ;
 
-  // ─────────────────────────────────────────────
-  // LOAD QUIZ + QUESTIONS
-  // ─────────────────────────────────────────────
-  const loadQuiz = async () => {
-    const q = await client.getQuizById(qid as string);
+  
+  // load quizzes and questions
+  const fetchQuizAndQuestions = async () => {
+    if (!qid) return;
+    const q = await client.getQuizById(qid as string); // quiz
+    const qList = await client.findQuestionsForQuiz(qid as string);  //questions
     setQuiz(q);
-  };
-
-  const loadQuestions = async () => {
-    const qList = await client.findQuestionsForQuiz(qid as string);
     setQuestions(qList);
-  };
+    await computeAndSavePoints(q, qList);
+    setLoading(false);
+  }
 
   useEffect(() => {
-    Promise.all([loadQuiz(), loadQuestions()]).then(() =>
-      setLoading(false)
-    );
+    fetchQuizAndQuestions();
   }, [qid]);
 
-  // ─────────────────────────────────────────────
+ 
   // CRUD Actions
-  // ─────────────────────────────────────────────
   const addQuestion = async () => {
     const newQ = await client.createQuestion(qid as string, {
         quiz: qid,
@@ -48,7 +47,9 @@ export default function QuizQuestionsEditorPage() {
       { text: "Option 2", isCorrect: false },
     ],
     });
-    setQuestions((prev) => [...prev, newQ]);
+    const updatedQuestionsList = [...questions, newQ]
+    setQuestions(updatedQuestionsList);
+    await computeAndSavePoints(quiz, updatedQuestionsList);
   };
 
   const saveQuestion = async (question: any) => {
@@ -58,7 +59,9 @@ export default function QuizQuestionsEditorPage() {
   const deleteQuestion = async (questionId: string) => {
     if (!confirm("Delete this question?")) return;
     await client.deleteQuestion(questionId);
-    setQuestions((prev) => prev.filter((q) => q._id !== questionId));
+    const updatedList = questions.filter((q) => q._id !== questionId);
+    setQuestions(updatedList);
+    await computeAndSavePoints(quiz, updatedList);
   };
 
   // Navigate tabs
@@ -68,6 +71,17 @@ export default function QuizQuestionsEditorPage() {
   const goToQuestions = () =>
     router.push(`/Courses/${cid}/Quizzes/${qid}/Questions`);
 
+  const computeAndSavePoints = async (quiz: any, list: any []) => {
+    if (!quiz) return;
+    const total = list.reduce(
+        (sum, q) => sum + (q.points ?? 0), 0
+    );
+    const updatedQuiz = await client.updateQuiz({
+        ...quiz, points: total,
+    });
+    setQuiz(updatedQuiz);
+  }
+
   if (loading || !quiz)
     return <div className="mt-4">Loading...</div>;
 
@@ -75,11 +89,24 @@ export default function QuizQuestionsEditorPage() {
     <div className="mt-4">
 
       {/* TOP STATUS BAR */}
-      <div className="d-flex justify-content-end align-items-center gap-4 text-secondary mb-3">
-        <span className="fw-semibold text-dark">
-          Points {questions.reduce((s, q) => s + (q.points ?? 0), 0)}
-        </span>
-      </div>
+       <div className="d-flex justify-content-end align-items-center gap-4 text-secondary mb-3">
+              <span className="fw-semibold text-dark">Points {quiz.points ?? 0}</span>
+              <span className="text-secondary d-flex align-items-center gap-1">
+                {quiz.published ? (
+                  <>
+                    <GreenCheckmark /> Published
+                  </>
+                ) : (
+                  <>
+                    <FaBan /> Not Published
+                  </>
+                )}
+              </span>
+              <Button variant="secondary" size="sm" className="">
+                <IoEllipsisVertical className="fs-5" />
+              </Button>
+            </div>
+     
 
       {/* TABS */}
       <ul className="nav nav-tabs mb-4">
@@ -97,7 +124,6 @@ export default function QuizQuestionsEditorPage() {
 
       {/* QUESTION LIST */}
       <div className="d-flex justify-content-between align-items-center mb-3">
-
         <Button variant="secondary" size="lg" onClick={addQuestion} >
           + New Question
         </Button>
