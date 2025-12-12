@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import {Alert,Button,Card,Col,Form,FormCheck,FormControl,FormGroup,FormLabel,Row,} from "react-bootstrap";
+import {Alert,Button,Card,CardBody,CardHeader,Col,Form,FormCheck,FormControl,FormGroup,FormLabel,Row,} from "react-bootstrap";
 import * as client from "../../../../client";
 
 type AnswersMap = Record<string, any>;
@@ -29,8 +29,7 @@ export default function TakeQuizPage() {
     (sum, q) => sum + (q.points || 0),
     0
   );
-
-  // ---------- answer helpers ----------
+  // answer helpers 
   const selectMC = (questionId: string, index: number) => {
     if (submitted || noMoreAttempts) return;
     setAnswers((prev) => ({ ...prev, [questionId]: index }));
@@ -46,46 +45,37 @@ export default function TakeQuizPage() {
     setAnswers((prev) => ({ ...prev, [questionId]: value }));
   };
 
-  // ---------- scoring ----------
+  // scoring 
+  const isCorrect = (q: any, given:any) => {
+    if (given == null || given === "") return false;
+    if (q.type === "multiple-choice") {
+        const correctIndex = q.choices?.findIndex((c: any) => c.isCorrect);
+        return correctIndex === given;
+    }
+    if (q.type === "true-false") {
+        return given === q.correctAnswer;
+    }
+    if (q.type === "fill-in-blank") {
+        const normalized = String(given).trim().toLowerCase();
+        return (q.answers ?? []).some(
+        (a: string) => a.trim().toLowerCase() === normalized
+        );
+    }
+    return false;
+  }
   const grade = (qs: any[], ans: AnswersMap) => {
     let total = 0;
     const res: ResultsMap = {};
 
     qs.forEach((q) => {
-      const given = ans[q._id];
-      let correct = false;
-
-      if (given == null || given === "") {
-        res[q._id] = false;
-        return;
-      }
-
-      if (q.type === "multiple-choice") {
-        const correctIndex = q.choices?.findIndex((c: any) => c.isCorrect);
-        correct = correctIndex === given;
-      }
-
-      if (q.type === "true-false") {
-        correct = given === q.correctAnswer;
-      }
-
-      if (q.type === "fill-in-blank") {
-        const candidates = (q.answers || []).map((a: string) =>
-          a.toLowerCase()
-        );
-        correct =
-          typeof given === "string" &&
-          candidates.includes(given.trim().toLowerCase());
-      }
-
-      if (correct) total += q.points || 0;
-      res[q._id] = correct;
-    });
-
+        const correct = isCorrect(q, ans[q._id]);
+        res[q._id] = correct;
+        if (correct) total += q.points || 0;
+    })
     return { total, res };
   };
 
-  // ---------- load quiz + questions + attempt info ----------
+  // load quiz + questions + attempt info
   useEffect(() => {
     const init = async () => {
       if (!qid) return;
@@ -97,7 +87,6 @@ export default function TakeQuizPage() {
         ]);
         setQuiz(qz);
         setQuestions(qs);
-
         // try starting a new attempt
         try {
           await client.startAttempt(qid as string);
@@ -141,7 +130,7 @@ export default function TakeQuizPage() {
     init();
   }, [qid]);
 
-  // ---------- submit ----------
+  // submit
   const handleSubmit = async () => {
     if (!qid) return;
 
@@ -163,7 +152,7 @@ export default function TakeQuizPage() {
     }
   };
 
-  // ---------- optional retake (if backend allows more attempts) ----------
+  // optional retake 
   const handleRetake = async () => {
     if (!qid) return;
     try {
@@ -192,7 +181,7 @@ export default function TakeQuizPage() {
 
   return (
     <div className="mt-4" id="wd-take-quiz-page">
-      {/* Header */}
+      {/* header */}
       <h3>{quiz.title}</h3>
 
       <div className="mb-3 text-muted">
@@ -217,21 +206,21 @@ export default function TakeQuizPage() {
       )}
 
       <Row>
-        {/* LEFT SIDE — QUESTION VIEW (same style as preview) */}
+        {/* left -question view */}
         <Col md={9}>
           {current && (
             <Card className="mb-3">
-              <Card.Header>
+              <CardHeader>
                 <span>Question {currentIndex + 1}</span>
                 <span className="float-end">{current.points ?? 0} pts</span>
-              </Card.Header>
+              </CardHeader>
 
-              <Card.Body>
+              <CardBody>
                 <div className="mb-3" style={{ whiteSpace: "pre-wrap" }}>
                   {current.questionHtml}
                 </div>
 
-                {/* Multiple Choice */}
+                {/* multiple choice */}
                 {current.type === "multiple-choice" && (
                   <Form>
                     {current.choices?.map((c: any, i: number) => {
@@ -249,10 +238,16 @@ export default function TakeQuizPage() {
                         />
                       );
                     })}
+                    {submitted && (
+                      <div className="mt-2 small">
+                        Correct answer:{" "}
+                        <span>{current.choices?.find((c:any) => c.isCorrect)?.text}</span>
+                      </div>
+                    )}
                   </Form>
                 )}
 
-                {/* True / False */}
+                {/* true/false */}
                 {current.type === "true-false" && (
                   <Form>
                     <FormCheck
@@ -281,7 +276,7 @@ export default function TakeQuizPage() {
                   </Form>
                 )}
 
-                {/* Fill in the Blank */}
+                {/* fill in the blank */}
                 {current.type === "fill-in-blank" && (
                   <FormGroup>
                     <FormLabel>Your Answer:</FormLabel>
@@ -294,14 +289,14 @@ export default function TakeQuizPage() {
                     />
                     {submitted && (
                       <div className="mt-2 small">
-                        Accepted answers:{" "}
+                        Correct answers:{" "}
                         {(current.answers || []).join(", ")}
                       </div>
                     )}
                   </FormGroup>
                 )}
 
-                {/* Correct/Incorrect label */}
+                {/* correct/incorrect label */}
                 {submitted && (
                   <div className="mt-3 small fw-semibold">
                     {results[current._id] ? (
@@ -311,11 +306,11 @@ export default function TakeQuizPage() {
                     )}
                   </div>
                 )}
-              </Card.Body>
+              </CardBody>
             </Card>
           )}
 
-          {/* Nav Buttons (same style as preview) */}
+          {/* nav buttons */}
           <div className="d-flex gap-2 mb-3">
             <Button
               disabled={currentIndex === 0}
@@ -332,7 +327,7 @@ export default function TakeQuizPage() {
           </div>
         </Col>
 
-        {/* RIGHT — Question links (same style as preview) */}
+        {/* right—question links */}
         <Col md={3}>
           <Card className="p-3 sticky-top" style={{ top: 90 }}>
             <h6 className="fw-semibold mb-2">Questions</h6>
@@ -352,7 +347,7 @@ export default function TakeQuizPage() {
         </Col>
       </Row>
 
-      {/* Bottom Actions */}
+      {/* bottom actions */}
       <div className="d-flex justify-content-between mt-4">
         <Button
           variant="outline-secondary"

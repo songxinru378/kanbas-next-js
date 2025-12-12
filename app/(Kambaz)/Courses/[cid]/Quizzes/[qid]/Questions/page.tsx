@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Button, Form, FormControl, Row, Col, Dropdown } from "react-bootstrap";
+import { Button, Form, FormControl, Row, Col, Dropdown, FormSelect } from "react-bootstrap";
 import * as client from "../../../../client";
 import { FaTrash, FaEdit, FaCheckCircle, FaBan, FaPlus } from "react-icons/fa";
 import GreenCheckmark from "../../../Modules/GreenCheckmark";
@@ -15,10 +15,10 @@ export default function QuizQuestionsEditorPage() {
   const [quiz, setQuiz] = useState<any>(null);
   const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  //const [title, setTitle] = ;
+  const [searchTitle, setSearchTitle] = useState("");
+  const [filterType, setFilterType] = useState<string>("ALL");
 
-  
-  // load quizzes and questions
+  // load the quiz and questions
   const fetchQuizAndQuestions = async () => {
     if (!qid) return;
     const q = await client.getQuizById(qid as string); // quiz
@@ -33,8 +33,27 @@ export default function QuizQuestionsEditorPage() {
     fetchQuizAndQuestions();
   }, [qid]);
 
- 
-  // CRUD Actions
+  const filterQuestionsByTitle = async (text: string) => {
+    setSearchTitle(text);
+    if (text) {
+        const results = await client.findQuestionsByPartialTitle( qid as string, text );
+        setQuestions(results);
+    } else {
+        const all = await client.findQuestionsForQuiz(qid as string);
+        setQuestions(all);
+    }
+  };
+  const filterQuestionsByType = async (type: string) => {
+    setFilterType(type);
+    if (type && type !== "ALL") {
+        const questions = await client.findQuestionsByType(qid as string, type);
+        setQuestions(questions);
+    } else {
+        fetchQuizAndQuestions();
+    }
+  };
+
+  //CRUD actions
   const addQuestion = async () => {
     const newQ = await client.createQuestion(qid as string, {
         quiz: qid,
@@ -64,7 +83,7 @@ export default function QuizQuestionsEditorPage() {
     await computeAndSavePoints(quiz, updatedList);
   };
 
-  // Navigate tabs
+  // navigate tabs
   const goToDetails = () =>
     router.push(`/Courses/${cid}/Quizzes/${qid}/Edit`);
 
@@ -87,11 +106,20 @@ export default function QuizQuestionsEditorPage() {
 
   return (
     <div className="mt-4">
-
-      {/* TOP STATUS BAR */}
-       <div className="d-flex justify-content-end align-items-center gap-4 text-secondary mb-3">
+      {/* top status bar */}
+       <div className="d-flex align-items-center gap-4 text-secondary mb-3">
+              <FormControl value={searchTitle} onChange={(e) => filterQuestionsByTitle(e.target.value)} placeholder="Search question"
+             className="w-25 me-2 wd-filter-question-by-title" />
+             <FormSelect value={filterType} onChange={(e) => filterQuestionsByType(e.target.value)}
+                className="w-25 me-2 wd-filter-question-by-type">
+                <option value="ALL">All Types</option>
+                <option value="multiple-choice">Multiple Choice</option>
+                <option value="true-false">True/False</option>
+                <option value="fill-in-blank">Fill in Blank</option>
+             </FormSelect>
+             <div className="d-flex align-items-center gap-3 ms-auto">
               <span className="fw-semibold text-dark">Points {quiz.points ?? 0}</span>
-              <span className="text-secondary d-flex align-items-center gap-1">
+              <span className="text-secondary d-flex gap-1 align-items-center">
                 {quiz.published ? (
                   <>
                     <GreenCheckmark /> Published
@@ -102,13 +130,12 @@ export default function QuizQuestionsEditorPage() {
                   </>
                 )}
               </span>
-              <Button variant="secondary" size="sm" className="">
+              <Button variant="secondary" size="sm">
                 <IoEllipsisVertical className="fs-5" />
               </Button>
+              </div>
             </div>
-     
-
-      {/* TABS */}
+      {/* tabs */}
       <ul className="nav nav-tabs mb-4">
         <li className="nav-item">
           <button className="nav-link" onClick={goToDetails}>
@@ -122,14 +149,14 @@ export default function QuizQuestionsEditorPage() {
         </li>
       </ul>
 
-      {/* QUESTION LIST */}
+      {/* question list */}
       <div className="d-flex justify-content-between align-items-center mb-3">
         <Button variant="secondary" size="lg" onClick={addQuestion} >
           + New Question
         </Button>
       </div>
 
-      {/* LIST */}
+      {/* list */}
       {questions.length === 0 && (
         <div className="text-muted ms-1">
           No questions yet – click <strong>Add Question</strong>
@@ -137,11 +164,10 @@ export default function QuizQuestionsEditorPage() {
       )}
 
       <div className="d-flex flex-column gap-3">
-        {questions.map((question, index) => (
+        {questions.map((question) => (
           <div
             key={question._id}
-            className="border rounded p-3 d-flex justify-content-between align-items-center"
-          >
+            className="border rounded p-3 d-flex justify-content-between align-items-center">
             <div className="w-75">
               <FormControl
                 className="fw-bold fs-5 mb-2"
@@ -149,15 +175,12 @@ export default function QuizQuestionsEditorPage() {
                 onChange={(e) =>
                   setQuestions((prev) =>
                     prev.map((q) =>
-                      q._id === question._id
-                        ? { ...q, title: e.target.value }
-                        : q
+                      q._id === question._id ? { ...q, title: e.target.value }: q
                     )
                   )
                 }
                 onBlur={() => saveQuestion(question)}
               />
-
               <Row className="text-muted small">
                 <Col>
                   <span>Type: {question.type}</span>
@@ -179,7 +202,6 @@ export default function QuizQuestionsEditorPage() {
               >
                 <FaEdit />
               </Button>
-
               <Button
                 variant="outline-danger"
                 onClick={() => deleteQuestion(question._id)}
@@ -190,7 +212,6 @@ export default function QuizQuestionsEditorPage() {
           </div>
         ))}
       </div>
-
       <hr className="mt-5" />
 
       <div className="d-flex justify-content-end gap-3">

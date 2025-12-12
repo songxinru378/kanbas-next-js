@@ -150,6 +150,21 @@ export const findQuestionsForQuiz = async (quizId: string) => {
   return response.data;
 };
 
+export const getQuestionById = async (questionId: string) => {
+    const response = await axios.get(`${QUESTIONS_API}/${questionId}`);
+    return response.data;
+}
+
+export const findQuestionsByPartialTitle = async (quizId: string, text: string) => {
+    const response = await axios.get(`${QUIZZES_API}/${quizId}/questions?text=${text}`);
+    return response.data;
+}
+
+export const findQuestionsByType = async (quizId: string, type: string) => {
+    const response = await axios.get(`${QUIZZES_API}/${quizId}/questions?type=${type}`);
+    return response.data;
+};
+
 export const createQuestion = async (quizId: string, question: any) => {
   const response = await axiosWithCredentials.post(
     `${QUIZZES_API}/${quizId}/questions`,

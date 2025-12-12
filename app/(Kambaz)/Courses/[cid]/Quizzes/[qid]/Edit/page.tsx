@@ -111,7 +111,7 @@ export default function QuizEditorPage() {
             </>
           )}
         </span>
-        <Button variant="secondary" size="sm" className="">
+        <Button variant="secondary" size="sm" >
           <IoEllipsisVertical className="fs-5" />
         </Button>
       </div>
@@ -150,7 +150,6 @@ export default function QuizEditorPage() {
             onChange={(e) => handleChange("title", e.target.value)}
           />
         </FormGroup>
-
         <FormGroup className="mb-4" controlId="wd-quiz-description-input">
           <FormLabel>Quiz Instructions</FormLabel>
           <FormControl
@@ -195,12 +194,13 @@ export default function QuizEditorPage() {
                 <option>Project</option>
               </FormSelect>
             </FormGroup>
+            {/* options */}
             <Row className="mt-3 g-3">
                 <div className="border rounded p-3 mb-4">
           <div className="fw-semibold mb-2">Options</div>
           <Row className="mb-3 mt-3 g-3 align-items-center">
             <Col md={4}>
-              <Form.Check
+              <FormCheck
                 type="checkbox"
                 id="wd-quiz-shuffle-answers"
                 label="Shuffle Answers"
@@ -262,8 +262,6 @@ export default function QuizEditorPage() {
                 <span className="ms-2">Attempts</span>
             </Col>
           </Row>
-
-
           <Row className="mt-3 g-3">
             <Col md={6}>
               <FormGroup controlId="wd-quiz-show-correct-answers">
